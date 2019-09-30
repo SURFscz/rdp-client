@@ -9,7 +9,7 @@ $ mvn package
 ...
 $ cp target/guacamole-tutorial-1.0.0.war /var/lib/tomcat8/webapps/
 
-$ cat var/lib/tomcat8/conf/guacamole-test.properties
+$ cat /var/lib/tomcat8/conf/guacamole-test.properties
 adc_host = buster.example.org
 rdp_host = rdp.example.org
 rdp_port = 3389
