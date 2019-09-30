@@ -17,4 +17,5 @@ guacd_port = 4822
 ```
 
 Only tested with Tomcat8/Chrome 77
+
 Warning: Clipboard API only works from HTTPS endpoint!
