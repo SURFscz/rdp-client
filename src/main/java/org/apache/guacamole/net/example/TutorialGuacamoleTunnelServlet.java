@@ -93,6 +93,8 @@ public class TutorialGuacamoleTunnelServlet
 	config.setParameter("password", pwd);
         config.setParameter("domain", "EXAMPLE");
         config.setParameter("security", "nla");
+        config.setParameter("width", "1400");
+        config.setParameter("height", "800");
 
         // Connect to guacd - everything is hard-coded here.
         GuacamoleSocket socket = new ConfiguredGuacamoleSocket(

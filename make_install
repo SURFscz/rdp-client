@@ -1,0 +1,4 @@
+#!/bin/sh
+mvn package
+cp target/guacamole-tutorial-1.0.0.war /var/lib/tomcat8/webapps/; tail -f /var/log/tomcat8/catalina.out 
+
