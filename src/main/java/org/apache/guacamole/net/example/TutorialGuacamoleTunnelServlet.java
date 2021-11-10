@@ -8,9 +8,17 @@ import org.apache.guacamole.net.SimpleGuacamoleTunnel;
 import org.apache.guacamole.protocol.ConfiguredGuacamoleSocket;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
 import org.apache.guacamole.servlet.GuacamoleHTTPTunnelServlet;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.servlet.ServletException;
+
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+
 import java.util.Properties;
 import java.net.*;
 import java.io.*;
@@ -24,7 +32,7 @@ public class TutorialGuacamoleTunnelServlet
     private final Logger logger = LoggerFactory.getLogger(TutorialGuacamoleTunnelServlet.class);
     private Properties properties = new Properties();
 
-    private String adc_host;
+    private String adc_url;
     private String rdp_host;
     private String rdp_port;
     private String guacd_host;
@@ -42,13 +50,13 @@ public class TutorialGuacamoleTunnelServlet
         properties.load(input);
         input.close();
 
-        adc_host = properties.getProperty("adc_host", "127.0.0.1");
+        adc_url = properties.getProperty("adc_url", "http://dc.sram.lan:5001/ps");
         rdp_host = properties.getProperty("rdp_host", "127.0.0.1");
         rdp_port = properties.getProperty("rdp_port", "3389");
         guacd_host = properties.getProperty("guacd_host", "127.0.0.1");
         guacd_port = Integer.parseInt(properties.getProperty("guacd_port", "4822"));
   
-        logger.info("adc_host: " + adc_host);
+        logger.info("adc_url: " + adc_url);
         logger.info("rdp_host: " + rdp_host);
         logger.info("rdp_port: " + rdp_port);
         logger.info("guacd_host: " + guacd_host);
@@ -65,7 +73,8 @@ public class TutorialGuacamoleTunnelServlet
 	String txt;
 
 	logger.info("Provisioning AD user "  + user + "/" + pwd);
-        try (Socket ADsocket = new Socket(adc_host, 10000)) {
+/* The old socket way
+        try (Socket ADsocket = new Socket(adc_host, adc_port)) {
 		BufferedReader in = new BufferedReader(new InputStreamReader(ADsocket.getInputStream()));
 		PrintWriter out = new PrintWriter(ADsocket.getOutputStream(), true);
 		out.println(user + ":" + pwd);
@@ -80,6 +89,23 @@ public class TutorialGuacamoleTunnelServlet
         } catch (IOException e) {
             e.printStackTrace();
         }
+*/
+/* The new HTTPRequest way */
+	String input = "{ \"user\":\"" + user + "\", \"password\":\"" + pwd + "\" }";
+	HttpRequest reqst = HttpRequest.newBuilder()
+            .uri(URI.create(adc_url))
+            .header("Content-Type", "application/json")
+            .POST(HttpRequest.BodyPublishers.ofString(input))
+            .build();
+
+	try {
+	    HttpClient client = HttpClient.newHttpClient();
+	    HttpResponse<String> response = client.send(reqst, HttpResponse.BodyHandlers.ofString());
+	    logger.info("Status: " + response.statusCode());
+	    logger.info("Body: " + response.body());
+	} catch (IOException | InterruptedException e) {
+	    logger.info("Error");
+	}
 
 	logger.info("Creating the RDP socket for "  + user + "/" + pwd);
 
@@ -91,7 +117,7 @@ public class TutorialGuacamoleTunnelServlet
         config.setParameter("port", rdp_port);
         config.setParameter("username", user);
 	config.setParameter("password", pwd);
-        config.setParameter("domain", "EXAMPLE");
+        config.setParameter("domain", "SRAM");
         config.setParameter("security", "nla");
         config.setParameter("width", "1400");
         config.setParameter("height", "800");

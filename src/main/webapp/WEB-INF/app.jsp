@@ -6,8 +6,9 @@
 
         <script type="text/javascript" src="guacamole-common-js/all.min.js"></script>
         <center>
-          <b>RDP Session for ${user}</b> using pwd: ${pwd} <input type=text style='margin: 0px;' id="clipboard"></input>
+	  <b>RDP Session for ${user}</b> <input type=text style='margin: 0px;' id="clipboard"></input>
           <div style='margin: 0px;' id="display"></div>
+	  <div style='display: none'>pwd: ${pwd}</div>
         </center>
         <script type="text/javascript">
             var display = document.getElementById("display");
@@ -24,7 +25,8 @@
 
             display.appendChild(guac_display);
             guac.onerror = function(error) {
-                alert(error);
+		console.log(error);
+                //alert(error);
             };
 
             guac.connect();

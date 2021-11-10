@@ -18,8 +18,8 @@ guacd_port = 4822
 ```
 ## Build guacd
 ```
-apt install libavcodec-dev libavutil-dev libswscale-dev libfreerdp-dev libpango1.0-dev libssh2-1-dev libtelnet-dev libvncserver-dev libpulse-dev libssl-dev libvorbis-dev libwebp-dev
-apt install libcairo2-dev libjpeg62-turbo-dev libpng-dev libossp-uuid-dev
+apt install libavcodec-dev libavutil-dev libswscale-dev libfreerdp2-dev libpango1.0-dev libssh2-1-dev libtelnet-dev libvncserver-dev libpulse-dev libssl-dev libvorbis-dev libwebp-dev
+apt install libcairo2-dev libjpeg-turbo8-dev libpng-dev libossp-uuid-dev
 apt install git build-essential autoconf libtool
 git clone git://github.com/apache/guacamole-server.git
 cd guacamole-server

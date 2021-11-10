@@ -9,6 +9,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.Random;
 
+import java.security.MessageDigest;
+import java.util.UUID;
+import java.security.NoSuchAlgorithmException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,9 +38,24 @@ public final class TutorialGuacamoleAppServlet extends HttpServlet {
     public void doGet(HttpServletRequest request,
                       HttpServletResponse response)
       throws IOException, ServletException {
-	String pwd = "Passw0rd" + String.format("%04d", rand.nextInt(10000));
-	//String pwd = "Passw0rd1234";
+      String pwd = "P@ssw0rd1234!";
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            md.update(UUID.randomUUID().toString().getBytes("UTF-8"));
+	    byte[] digest = md.digest();
+	    StringBuffer hexString = new StringBuffer();
+	    for (int i = 0;i<digest.length;i++) {
+                hexString.append(Integer.toHexString(0xFF & digest[i]));
+            }
+            pwd = hexString.toString() + "!";
+	} catch (NoSuchAlgorithmException e) {
+	    logger.info("NoSuchAlgorithmException");
+        }
+	//String pwd = "P@ssw0rd" + String.format("%04d", rand.nextInt(10000)) + "!";
+	//String pwd = "test1234!";
 	String user = request.getParameter("user");
+
+	logger.info("AppServlet request for: " + user + ", using pwd: " + pwd );
 
         HttpSession session = request.getSession();
         session.setAttribute("user", user);
